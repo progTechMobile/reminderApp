@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Icon, Input } from "react-native-elements";
 
-export default function Login() {
+export default function SignIn() {
   const [logged, setLogged] = useState(false);
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +26,7 @@ export default function Login() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <Image
-          source={require("../../assets/adaptive-icon.png")}
+          source={require("../../../assets/adaptive-icon.png")}
           style={styles.stretch}
         />
         <View style={styles.inputContainer}>
@@ -50,7 +50,11 @@ export default function Login() {
             onChangeText={setPassword}
           />
         </View>
-        <Button title="Iniciar Sesión" onPress={login} />
+        <Button
+          title="Iniciar Sesión"
+          onPress={login}
+          style={styles.buttonLogin}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -74,7 +78,7 @@ const styles = StyleSheet.create({
   },
   stretch: {
     width: windowWidth * 1,
-    height: windowHeight * 0.7,
+    height: windowHeight * 0.5,
     resizeMode: "contain",
   },
   inputContainer: {
@@ -88,5 +92,11 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingEnd: 10,
     width: windowWidth * 0.5,
+  },
+  buttonLogin: {
+    marginBottom: 5,
+    marginTop: 5,
+    paddingBottom: 10,
+    paddingTop: 10,
   },
 });
