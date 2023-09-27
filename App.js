@@ -15,7 +15,7 @@ const Tab = createBottomTabNavigator();
 const { Navigator: TabNavigator, Screen: TabScreen } = Tab;
 const getIsSignedIn = () => {
   // custom logic
-  return true;
+  return false;
 };
 
 export default function App() {
@@ -41,7 +41,8 @@ export default function App() {
         <TabNavigator
           initialRouteName="SignIn"
           screenOptions={{
-            activeTintColor: "black",
+            tabBarActiveTintColor: "black",
+            tabBarInactiveTintColor: "gray"
           }}
         >
           <TabScreen
