@@ -12,14 +12,39 @@ import {
   ScrollView,
 } from "react-native";
 import { Icon, Input } from "react-native-elements";
+//import { useSelector } from "react-redux";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignIn() {
-  const [logged, setLogged] = useState(false);
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
 
   const login = () => {
-    setLogged(true);
+    fetch(
+      "https://56e0-2800-e2-980-20d-fd72-7b95-a67f-f122.ngrok-free.app/api/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: user,
+          password: password,
+        }),
+      }
+    )
+      .then((response) => response.json())
+      .then((jsonToken) => {
+        console.log(jsonToken);
+        // const user = useSelector( state => state.user);
+        //console.log(user);
+        AsyncStorage.setItem("token", jsonToken.token)
+        setUser("");
+        setPassword("");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (

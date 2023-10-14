@@ -17,13 +17,28 @@ export default function SingUp() {
   const [user, setUser] = useState({
     name: "",
     last_name: "",
-    email_u: "",
+    email: "",
     password: "",
+    role_id: 7,
     status: "active",
   });
 
   const saveUser = () => {
-    console.log(user);
+    fetch(
+      "https://56e0-2800-e2-980-20d-fd72-7b95-a67f-f122.ngrok-free.app/api/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(user),
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
