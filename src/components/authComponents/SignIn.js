@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -12,40 +12,14 @@ import {
   ScrollView,
 } from "react-native";
 import { Icon, Input } from "react-native-elements";
-//import { useSelector } from "react-redux";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_ENDPOINT } from "@env";
+import { AuthContext } from "../../state/AuthContext";
 
 export default function SignIn() {
+  const { signIn } = useContext(AuthContext);
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
-
-  const login = () => {
-    fetch(
-      "https://56e0-2800-e2-980-20d-fd72-7b95-a67f-f122.ngrok-free.app/api/login",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: user,
-          password: password,
-        }),
-      }
-    )
-      .then((response) => response.json())
-      .then((jsonToken) => {
-        console.log(jsonToken);
-        // const user = useSelector( state => state.user);
-        //console.log(user);
-        AsyncStorage.setItem("token", jsonToken.token)
-        setUser("");
-        setPassword("");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -61,7 +35,7 @@ export default function SignIn() {
             style={styles.input}
             errorStyle={{ color: "red" }}
             errorMessage={user == "" ? "" : "Ingrese un usuario valido"}
-            onChangeText={setUser}
+            onChangeText={(text) => setUser(text)}
           />
         </View>
         <View style={styles.inputContainer}>
@@ -72,12 +46,12 @@ export default function SignIn() {
             errorStyle={{ color: "red" }}
             errorMessage={password == "" ? "" : "Ingrese un Contraseña valida"}
             secureTextEntry={true}
-            onChangeText={setPassword}
+            onChangeText={(text) => setPassword(text)}
           />
         </View>
         <Button
           title="Iniciar Sesión"
-          onPress={login}
+          onPress={() => signIn({ user, password })}
           style={styles.buttonLogin}
         />
       </ScrollView>

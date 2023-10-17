@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -12,34 +12,30 @@ import {
   ScrollView,
 } from "react-native";
 import { Icon, Input } from "react-native-elements";
+import { Picker } from "@react-native-picker/picker";
+import { API_ENDPOINT } from "@env";
+import { AuthContext } from "../../state/AuthContext";
+
+import { getRolesAvailables } from "../../services/userServices";
 
 export default function SingUp() {
+  const { signUp } = useContext(AuthContext);
   const [user, setUser] = useState({
-    name: "",
-    last_name: "",
-    email: "",
-    password: "",
-    role_id: 7,
-    status: "active",
+    name: null,
+    last_name: null,
+    email: null,
+    password: null,
+    role_id: null,
   });
-
-  const saveUser = () => {
-    fetch(
-      "https://56e0-2800-e2-980-20d-fd72-7b95-a67f-f122.ngrok-free.app/api/register",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(user),
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((err) => console.log(err));
-  };
+  const [roles, setRoles] = useState([]);
+  useEffect(() => {
+    const getRoles = async () => {
+      const dataRoles = await getRolesAvailables();
+      setRoles(dataRoles);
+      console.log(dataRoles);
+    };
+    getRoles();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -68,7 +64,7 @@ export default function SingUp() {
             style={styles.input}
             errorStyle={{ color: "red" }}
             errorMessage={user.email_u == "" ? "" : "Ingrese un Correo valido"}
-            onChangeText={(text) => setUser({ ...user, email_u: text })}
+            onChangeText={(text) => setUser({ ...user, email: text })}
           />
         </View>
         <View style={styles.inputContainer}>
@@ -83,7 +79,20 @@ export default function SingUp() {
             onChangeText={(text) => setUser({ ...user, password: text })}
           />
         </View>
-        <Button title="Guardar" onPress={saveUser} />
+        <View style={styles.inputContainer}>
+          <Picker
+            selectedValue={user.role_id}
+            onValueChange={(itemValue, itemIndex) =>
+              setUser({ ...user, role_id: itemValue })
+            }
+            style={styles.input}
+          >
+            {roles.map((role) => (
+              <Picker.Item key={role.id} label={role.name} value={role.id} />
+            ))}
+          </Picker>
+        </View>
+        <Button title="Guardar" onPress={() => signUp(user)} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -111,7 +120,7 @@ const styles = StyleSheet.create({
     marginEnd: 5,
     paddingLeft: 10,
     paddingEnd: 10,
-    width: 100,
+    width: windowWidth * 1,
   },
   stretch: {
     width: windowWidth * 1,

@@ -1,3 +1,11 @@
+import {
+  useContext,
+  useMemo,
+  useEffect,
+  useState,
+  createContext,
+  useReducer,
+} from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, SafeAreaView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
@@ -6,14 +14,16 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Icon, Button } from "react-native-elements";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { store, persistor } from "./src/state/store";
 
 import SignIn from "./src/components/authComponents/SignIn";
 import SingUp from "./src/components/authComponents/SingUp";
 import Home from "./src/components/homeComponents/Home";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useState } from 'react';
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import { API_ENDPOINT } from "@env";
+import { AuthContext } from "./src/state/AuthContext";
+import { logout, login } from "./src/services/authService";
+import { saveUser } from "./src/services/userServices";
 
 const Stack = createNativeStackNavigator();
 const { Navigator: StackNavigator, Screen: StackScreen } = Stack;
@@ -21,106 +31,139 @@ const Tab = createBottomTabNavigator();
 const { Navigator: TabNavigator, Screen: TabScreen } = Tab;
 
 export default function App() {
-  
-  const getIsSignedIn = () => {
-    const token = AsyncStorage.getItem("token");
-    if (token) {
-      return true;
-    }
-    return false;
-  };
-  
-  const logout = () => {
-    fetch(
-      "https://56e0-2800-e2-980-20d-fd72-7b95-a67f-f122.ngrok-free.app/api/logout",
-      {
-        method: "POST",
-        headers: {
-          headers: {
-            "Content-Type": "application/json",
-            authorization: "Bearer " + AsyncStorage.getItem("token"),
-          },
-        },
+  const [state, dispatch] = useReducer(
+    (prevState, action) => {
+      switch (action.type) {
+        case "RESTORE_TOKEN":
+          return {
+            ...prevState,
+            userToken: action.token,
+            isLoading: false,
+          };
+        case "SIGN_IN":
+          return {
+            ...prevState,
+            isSignout: false,
+            userToken: action.token,
+          };
+        case "SIGN_OUT":
+          return {
+            ...prevState,
+            isSignout: true,
+            userToken: null,
+          };
       }
-      )
-      .then((response) => response)
-      .then((message) => {
-        AsyncStorage.removeItem("token");
-        setIsSignedIn(false);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    },
+    {
+      isLoading: true,
+      isSignout: false,
+      userToken: null,
+    }
+  );
+
+  useEffect(() => {
+    const bootstrapAsync = async () => {
+      let userToken;
+
+      try {
+        userToken = await AsyncStorage.getItem("token");
+      } catch (e) {
+        // Restoring token failed
+      }
+      dispatch({ type: "RESTORE_TOKEN", token: userToken });
     };
-    
-    const [isSignedIn, setIsSignedIn] = useState(getIsSignedIn());
+
+    bootstrapAsync();
+  }, []);
+
+  const authContext = useMemo(
+    () => ({
+      signIn: async (data) => {
+        const userToken = await login(data);
+        dispatch({ type: "SIGN_IN", token: userToken });
+      },
+      signOut: () => {
+        logout();
+        dispatch({ type: "SIGN_OUT" });
+      },
+      signUp: async (data) => {
+        const newUser = await saveUser(data);
+        const userToken =
+          newUser && newUser.id
+            ? await login({ user: data.email, password: data.password })
+            : null;
+        dispatch({ type: "SIGN_IN", token: userToken });
+      },
+    }),
+    []
+  );
 
   return (
-    <Provider store={store}>
-      <PersistGate persistor={persistor} loading={null}>
-        <NavigationContainer>
-          {isSignedIn ? (
-            <StackNavigator initialRouteName="Home">
-              <StackScreen
-                name="Home"
-                component={Home}
-                options={{
-                  title: "Reminder U",
-                  tabBarIcon: ({ color, size }) => (
-                    <Icon name="account-circle" size={24} color="black" />
-                  ),
-                  headerRight: () => (
-                    <Button
-                      icon={<Icon name="logout" size={24} color="black" />}
-                      type="clear"
-                      iconRight={true}
-                      containerStyle={{ marginRight: 0 }}
-                      size="small"
-                      raised={true}
-                      rounded={true}
-                      titleStyle={{ color: "black" }}
-                      onPress={logout}
-                      color="#fff"
-                    />
-                  ),
-                }}
-              />
-            </StackNavigator>
-          ) : (
-            <TabNavigator
-              initialRouteName="SignIn"
-              screenOptions={{
-                tabBarActiveTintColor: "black",
-                tabBarInactiveTintColor: "gray",
+    <AuthContext.Provider value={authContext}>
+      <NavigationContainer>
+        {state.isLoading ? (
+          <Text>Loading...</Text>
+        ) : state.userToken == null ? (
+          <TabNavigator
+            initialRouteName="SignIn"
+            screenOptions={{
+              tabBarActiveTintColor: "black",
+              tabBarInactiveTintColor: "gray",
+            }}
+          >
+            <TabScreen
+              name="SignIn"
+              component={SignIn}
+              options={{
+                title: "Iniciar Sesión",
+                tabBarLabel: "Iniciar Sesión",
+                tabBarIcon: ({ color, size }) => (
+                  <Icon name="login" size={24} color="black" />
+                ),
               }}
-            >
-              <TabScreen
-                name="SignIn"
-                component={SignIn}
-                options={{
-                  title: "Iniciar Sesión",
-                  tabBarLabel: "Iniciar Sesión",
-                  tabBarIcon: ({ color, size }) => (
-                    <Icon name="login" size={24} color="black" />
-                  ),
-                }}
-              />
-              <TabScreen
-                name="SingUp"
-                component={SingUp}
-                options={{
-                  title: "Crear Cuenta",
-                  tabBarLabel: "Crear Cuenta",
-                  tabBarIcon: ({ color, size }) => (
-                    <Icon name="account-circle" size={24} color="black" />
-                  ),
-                }}
-              />
-            </TabNavigator>
-          )}
-        </NavigationContainer>
-      </PersistGate>
-    </Provider>
+            />
+            <TabScreen
+              name="SingUp"
+              component={SingUp}
+              options={{
+                title: "Crear Cuenta",
+                tabBarLabel: "Crear Cuenta",
+                tabBarIcon: ({ color, size }) => (
+                  <Icon name="account-circle" size={24} color="black" />
+                ),
+              }}
+            />
+          </TabNavigator>
+        ) : (
+          <StackNavigator initialRouteName="Home">
+            <StackScreen
+              name="Home"
+              component={Home}
+              options={{
+                title: "Reminder U",
+                tabBarIcon: ({ color, size }) => (
+                  <Icon name="account-circle" size={24} color="black" />
+                ),
+                headerRight: () => (
+                  <Button
+                    icon={<Icon name="logout" size={24} color="black" />}
+                    type="clear"
+                    iconRight={true}
+                    containerStyle={{ marginRight: 0 }}
+                    size="small"
+                    raised={true}
+                    rounded={true}
+                    titleStyle={{ color: "black" }}
+                    onPress={authContext.signOut}
+                    color="#fff"
+                  />
+                ),
+              }}
+            />
+          </StackNavigator>
+        )}
+      </NavigationContainer>
+    </AuthContext.Provider>
   );
 }
 

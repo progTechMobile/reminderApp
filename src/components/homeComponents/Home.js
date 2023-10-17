@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StyleSheet, Text, SafeAreaView, ScrollView } from "react-native";
 import { Button, Icon } from "react-native-elements";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Reminder from "../reminderComponents/Reminder";
 import Schedule from "../scheduleComponents/Schedule";
@@ -9,10 +9,10 @@ import Score from "../scoreComponents/Score";
 import Teacher from "../teacherComponents copy/Teacher";
 
 const Tab = createBottomTabNavigator();
-const { Navigator: TabNavigator, Screen: TabScreen} = Tab;
+const { Navigator: TabNavigator, Screen: TabScreen } = Tab;
 
 export default function Home({ navigation }) {
-    return (
+  return (
     <TabNavigator
       initialRouteName="Reminder"
       screenOptions={{
