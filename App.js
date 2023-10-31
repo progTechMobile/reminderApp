@@ -84,7 +84,7 @@ export default function App() {
     () => ({
       signIn: async (data) => {
         const jsonResponse = await login(data);
-        dispatch({ type: "SIGN_IN", token: jsonResponse?.token });
+        dispatch({ type: "SIGN_IN", token: jsonResponse?.token, user: jsonResponse.user });
       },
       signOut: () => {
         logout();
@@ -97,7 +97,7 @@ export default function App() {
           newUser && newUser.id
             ? await login({ email: email, password: password.toLowerCase() })
             : null;
-        dispatch({ type: "SIGN_IN", token: jsonResponse?.token });
+        dispatch({ type: "SIGN_IN", token: jsonResponse?.token, user: jsonResponse.user });
       },
     }),
     []

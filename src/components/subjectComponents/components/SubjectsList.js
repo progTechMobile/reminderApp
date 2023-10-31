@@ -4,7 +4,7 @@ import { StyleSheet, Text, SafeAreaView, ScrollView, View, Dimensions } from "re
 import { Button, Icon, Input } from "react-native-elements";
 import { useForm, Controller } from "react-hook-form";
 
-export default function RemindersList() {
+export default function SubjectsList({ navigation }) {
   const {
     control,
     handleSubmit,
@@ -23,13 +23,14 @@ export default function RemindersList() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.inputContainer}>
-        <Controller
+            <Text>Lista</Text>
+        {/* <Controller
             control={control}
             rules={{ required: true }}
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
                 placeholder="Nombre"
-                leftIcon={<Icon name="person" size={24} color="black" />}
+                leftIcon={<Icon name="book" size={24} color="black" />}
                 style={styles.input}
                 errorStyle={{ color: "red" }}
                 errorMessage={
@@ -41,7 +42,7 @@ export default function RemindersList() {
               />
             )}
             name="name"
-          />
+          /> */}
         </View>
       </ScrollView>
     </SafeAreaView>

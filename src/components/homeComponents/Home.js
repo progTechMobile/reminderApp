@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Reminder from "../reminderComponents/Reminder";
 import Schedule from "../scheduleComponents/Schedule";
 import Score from "../scoreComponents/Score";
+import Subject from "../subjectComponents/Subject";
 import Teacher from "../teacherComponents copy/Teacher";
 
 const Tab = createBottomTabNavigator();
@@ -20,6 +21,18 @@ export default function Home({ navigation }) {
         tabBarInactiveTintColor: "gray",
       }}
     >
+      
+      <TabScreen
+        name="Subject"
+        component={Subject}
+        options={{
+          title: "Materias",
+          tabBarLabel: "Materias",
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="book" size={24} color="black" />
+          ),
+        }}
+      />
       <TabScreen
         name="Reminder"
         component={Reminder}

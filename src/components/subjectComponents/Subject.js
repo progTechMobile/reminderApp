@@ -1,12 +1,49 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { StyleSheet, Text, SafeAreaView, ScrollView } from "react-native";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { StyleSheet, Text, SafeAreaView,ScrollView } from "react-native";
 import { Button, Icon } from "react-native-elements";
+import SubjectsList from "./components/SubjectsList";
+import SubjectAdd from "./components/SubjectAdd";
 
-const Tab = createBottomTabNavigator();
+
+
+
+const Tab = createMaterialTopTabNavigator();
 const { Navigator: TabNavigator, Screen: TabScreen } = Tab;
 
 export default function Subject({ navigation }) {
-  return <Text>Subject</Text>;
+  return (
+    <TabNavigator
+      initialRouteName="SubjectsList"
+      screenOptions={{
+        tabBarAndroidRipple: { borderless: false },
+        tabBarIcon: ({ focused, color, size }) => {
+          return <Icon name="logout" size={24} color="black" />;
+        },
+      }}
+    >
+      <TabScreen
+        name="SubjectsList"
+        component={SubjectsList}
+        options={{
+          tabBarLabel:'Lista',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="menu-book" size={16} color="black" />
+          ),
+        }}
+      />
+      <TabScreen
+        name="SubjectsAdd"
+        component={SubjectAdd}
+        options={{
+          tabBarLabel:'agregar',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="add" size={16} color="black" />
+          ),
+        }}
+      />
+    </TabNavigator>
+  );
 }
 
 const styles = StyleSheet.create({
