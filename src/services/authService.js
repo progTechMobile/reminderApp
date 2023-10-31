@@ -1,9 +1,11 @@
 import { API_ENDPOINT } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {Alert} from "react-native";
 
-export const login = async ({ user, password }) => {
-  if (!user || user === "" || !password || password === "") {
-    throw new Error("Usuario y contraseña son obligatorios");
+export const login = async ({ email, password }) => {
+  if (!email || email === "" || !password || password === "") {
+    Alert.alert("Usuario y contraseña son obligatorios");
+    return;
   }
 
   try {
@@ -14,21 +16,21 @@ export const login = async ({ user, password }) => {
         Accept: "application/json",
       },
       body: JSON.stringify({
-        email: user,
-        password: password,
+        email: email.toLowerCase(),
+        password,
       }),
     });
 
     if (!response.ok) {
-      throw new Error("Error en la solicitud de inicio de sesión");
+      Alert.alert("Error en la solicitud de inicio de sesión");
+      return;
     }
 
-    let jsonToken = await response.json();
-    await AsyncStorage.setItem("token", jsonToken.token);
-    return jsonToken.token || null;
+    let jsonResponse = await response.json();
+    await AsyncStorage.setItem("token", jsonResponse.token);
+    return jsonResponse || null;
   } catch (error) {
-    console.error(error);
-    throw new Error("Error en el inicio de sesión");
+    Alert.alert("Error en el inicio de sesión");
   }
 };
 
@@ -47,10 +49,10 @@ export const logout = async () => {
       if (response.ok) {
         AsyncStorage.removeItem("token");
       } else {
-        throw new Error("Error en la solicitud de cierre de sesión");
+        Alert.alert("Error en la solicitud de cierre de sesión");
       }
     })
     .catch((error) => {
-      console.error(error);
+      
     });
 };

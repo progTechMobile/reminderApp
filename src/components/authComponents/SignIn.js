@@ -15,11 +15,20 @@ import { Icon, Input } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_ENDPOINT } from "@env";
 import { AuthContext } from "../../state/AuthContext";
+import { useForm, Controller } from "react-hook-form";
 
 export default function SignIn() {
   const { signIn } = useContext(AuthContext);
-  const [user, setUser] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -29,29 +38,57 @@ export default function SignIn() {
           style={styles.stretch}
         />
         <View style={styles.inputContainer}>
-          <Input
-            placeholder="Usuario"
-            leftIcon={<Icon name="person" size={24} color="black" />}
-            style={styles.input}
-            errorStyle={{ color: "red" }}
-            errorMessage={user == "" ? "" : "Ingrese un usuario valido"}
-            onChangeText={(text) => setUser(text)}
+          <Controller
+            control={control}
+            rules={{ required: true, pattern: /^\S+@\S+$/i }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                placeholder="Usuario"
+                leftIcon={<Icon name="person" size={24} color="black" />}
+                style={styles.input}
+                errorStyle={{ color: "red" }}
+                errorMessage={
+                  errors.email?.type === "required"
+                    ? "Ingrese un usuario"
+                    : errors.email?.type === "pattern"
+                    ? "Ingrese un email valido"
+                    : ""
+                }
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+            name="email"
           />
         </View>
         <View style={styles.inputContainer}>
-          <Input
-            placeholder="Contraseña"
-            leftIcon={<Icon name="lock" size={24} color="black" />}
-            style={styles.input}
-            errorStyle={{ color: "red" }}
-            errorMessage={password == "" ? "" : "Ingrese un Contraseña valida"}
-            secureTextEntry={true}
-            onChangeText={(text) => setPassword(text)}
+          <Controller
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                placeholder="Contraseña"
+                leftIcon={<Icon name="lock" size={24} color="black" />}
+                style={styles.input}
+                errorStyle={{ color: "red" }}
+                errorMessage={
+                  errors.password?.type === "required"
+                    ? "Ingrese un Contraseña valida"
+                    : ""
+                }
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                secureTextEntry={true}
+              />
+            )}
+            name="password"
           />
         </View>
         <Button
           title="Iniciar Sesión"
-          onPress={() => signIn({ user, password })}
+          onPress={handleSubmit(signIn)}
           style={styles.buttonLogin}
         />
       </ScrollView>

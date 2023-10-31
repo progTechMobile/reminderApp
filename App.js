@@ -18,6 +18,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import SignIn from "./src/components/authComponents/SignIn";
 import SingUp from "./src/components/authComponents/SingUp";
 import Home from "./src/components/homeComponents/Home";
+import SplashScreen from "./src/components/utils/SplashScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { API_ENDPOINT } from "@env";
@@ -45,12 +46,14 @@ export default function App() {
             ...prevState,
             isSignout: false,
             userToken: action.token,
+            user: action.user,
           };
         case "SIGN_OUT":
           return {
             ...prevState,
             isSignout: true,
             userToken: null,
+            user: null,
           };
       }
     },
@@ -58,6 +61,7 @@ export default function App() {
       isLoading: true,
       isSignout: false,
       userToken: null,
+      user: null,
     }
   );
 
@@ -79,8 +83,8 @@ export default function App() {
   const authContext = useMemo(
     () => ({
       signIn: async (data) => {
-        const userToken = await login(data);
-        dispatch({ type: "SIGN_IN", token: userToken });
+        const jsonResponse = await login(data);
+        dispatch({ type: "SIGN_IN", token: jsonResponse?.token });
       },
       signOut: () => {
         logout();
@@ -88,11 +92,12 @@ export default function App() {
       },
       signUp: async (data) => {
         const newUser = await saveUser(data);
-        const userToken =
+        const { email, password } = data;
+        const jsonResponse =
           newUser && newUser.id
-            ? await login({ user: data.email, password: data.password })
+            ? await login({ email: email, password: password.toLowerCase() })
             : null;
-        dispatch({ type: "SIGN_IN", token: userToken });
+        dispatch({ type: "SIGN_IN", token: jsonResponse?.token });
       },
     }),
     []
@@ -102,7 +107,7 @@ export default function App() {
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
         {state.isLoading ? (
-          <Text>Loading...</Text>
+          <SplashScreen />
         ) : state.userToken == null ? (
           <TabNavigator
             initialRouteName="SignIn"

@@ -15,24 +15,31 @@ import { Icon, Input } from "react-native-elements";
 import { Picker } from "@react-native-picker/picker";
 import { API_ENDPOINT } from "@env";
 import { AuthContext } from "../../state/AuthContext";
+import { useForm, Controller } from "react-hook-form";
 
 import { getRolesAvailables } from "../../services/userServices";
 
 export default function SingUp() {
   const { signUp } = useContext(AuthContext);
-  const [user, setUser] = useState({
-    name: null,
-    last_name: null,
-    email: null,
-    password: null,
-    role_id: null,
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: "",
+      last_name: "",
+      email: "",
+      password: "",
+      role_id: "",
+    },
   });
+
   const [roles, setRoles] = useState([]);
   useEffect(() => {
     const getRoles = async () => {
       const dataRoles = await getRolesAvailables();
       setRoles(dataRoles);
-      console.log(dataRoles);
     };
     getRoles();
   }, []);
@@ -45,54 +52,129 @@ export default function SingUp() {
           style={styles.stretch}
         />
         <View style={styles.inputContainer}>
-          <Input
-            placeholder="Nombre"
-            style={styles.input}
-            onChangeText={(text) => setUser({ ...user, name: text })}
+          <Controller
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                placeholder="Nombre"
+                leftIcon={<Icon name="person" size={24} color="black" />}
+                style={styles.input}
+                errorStyle={{ color: "red" }}
+                errorMessage={
+                  errors.name?.type === "required" ? "Ingrese un nombre" : ""
+                }
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+            name="name"
           />
         </View>
         <View style={styles.inputContainer}>
-          <Input
-            placeholder="Apellido"
-            style={styles.input}
-            onChangeText={(text) => setUser({ ...user, last_name: text })}
+          <Controller
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                placeholder="Apellido"
+                leftIcon={<Icon name="person" size={24} color="black" />}
+                style={styles.input}
+                errorStyle={{ color: "red" }}
+                errorMessage={
+                  errors.last_name?.type === "required"
+                    ? "Ingrese un nombre"
+                    : ""
+                }
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+            name="last_name"
           />
         </View>
         <View style={styles.inputContainer}>
-          <Input
-            placeholder="Correo"
-            style={styles.input}
-            errorStyle={{ color: "red" }}
-            errorMessage={user.email_u == "" ? "" : "Ingrese un Correo valido"}
-            onChangeText={(text) => setUser({ ...user, email: text })}
+          <Controller
+            control={control}
+            rules={{ required: true, pattern: /^\S+@\S+$/i }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                placeholder="Correo"
+                leftIcon={<Icon name="email" size={24} color="black" />}
+                style={styles.input}
+                errorStyle={{ color: "red" }}
+                errorMessage={
+                  errors.email?.type === "required"
+                    ? "Ingrese un correo"
+                    : errors.email?.type === "pattern"
+                    ? "Ingrese un email valido"
+                    : ""
+                }
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+            name="email"
           />
         </View>
         <View style={styles.inputContainer}>
-          <Input
-            placeholder="Contraseña"
-            style={styles.input}
-            errorStyle={{ color: "red" }}
-            errorMessage={
-              user.password == "" ? "" : "Ingrese una Contraseña valida"
-            }
-            secureTextEntry={true}
-            onChangeText={(text) => setUser({ ...user, password: text })}
+          <Controller
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                placeholder="Contraseña"
+                leftIcon={<Icon name="lock" size={24} color="black" />}
+                style={styles.input}
+                errorStyle={{ color: "red" }}
+                errorMessage={
+                  errors.password?.type === "required"
+                    ? "Ingrese un Contraseña valida"
+                    : ""
+                }
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                secureTextEntry={true}
+              />
+            )}
+            name="password"
           />
         </View>
         <View style={styles.inputContainer}>
-          <Picker
-            selectedValue={user.role_id}
-            onValueChange={(itemValue, itemIndex) =>
-              setUser({ ...user, role_id: itemValue })
-            }
-            style={styles.input}
-          >
-            {roles.map((role) => (
-              <Picker.Item key={role.id} label={role.name} value={role.id} />
-            ))}
-          </Picker>
+          <Controller
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Picker
+                leftIcon={<Icon name="role" size={24} color="black" />}
+                style={styles.input}
+                errorStyle={{ color: "red" }}
+                errorMessage={
+                  errors.password?.type === "required"
+                    ? "Seleccione un rolvalido"
+                    : ""
+                }
+                onBlur={onBlur}
+                selectedValue={value}
+                onValueChange={onChange}
+              >
+                {roles.map((role) => (
+                  <Picker.Item
+                    key={role.id}
+                    label={role.name}
+                    value={role.id}
+                  />
+                ))}
+              </Picker>
+            )}
+            name="role_id"
+          />
         </View>
-        <Button title="Guardar" onPress={() => signUp(user)} />
+        <Button title="Guardar" onPress={handleSubmit(signUp)} />
       </ScrollView>
     </SafeAreaView>
   );
