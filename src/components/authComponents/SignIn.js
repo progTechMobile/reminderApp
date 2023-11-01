@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Icon, Input } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_ENDPOINT } from "@env";
+import { env } from "../../utils/Constants"
 import { AuthContext } from "../../state/AuthContext";
 import { useForm, Controller } from "react-hook-form";
 

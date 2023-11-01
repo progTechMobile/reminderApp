@@ -21,7 +21,6 @@ import Home from "./src/components/homeComponents/Home";
 import SplashScreen from "./src/components/utils/SplashScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
-import { API_ENDPOINT } from "@env";
 import { AuthContext } from "./src/state/AuthContext";
 import { logout, login } from "./src/services/authService";
 import { saveUser } from "./src/services/userServices";
@@ -45,23 +44,20 @@ export default function App() {
           return {
             ...prevState,
             isSignout: false,
-            userToken: action.token,
-            user: action.user,
+            userToken: action.token
           };
         case "SIGN_OUT":
           return {
             ...prevState,
             isSignout: true,
-            userToken: null,
-            user: null,
+            userToken: null
           };
       }
     },
     {
       isLoading: true,
       isSignout: false,
-      userToken: null,
-      user: null,
+      userToken: null
     }
   );
 
@@ -84,7 +80,7 @@ export default function App() {
     () => ({
       signIn: async (data) => {
         const jsonResponse = await login(data);
-        dispatch({ type: "SIGN_IN", token: jsonResponse?.token, user: jsonResponse.user });
+        dispatch({ type: "SIGN_IN", token: jsonResponse?.token});
       },
       signOut: () => {
         logout();
@@ -95,9 +91,9 @@ export default function App() {
         const { email, password } = data;
         const jsonResponse =
           newUser && newUser.id
-            ? await login({ email: email, password: password.toLowerCase() })
+            ? await login({ email: email, password: password })
             : null;
-        dispatch({ type: "SIGN_IN", token: jsonResponse?.token, user: jsonResponse.user });
+        dispatch({ type: "SIGN_IN", token: jsonResponse?.token});
       },
     }),
     []

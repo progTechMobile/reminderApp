@@ -1,7 +1,7 @@
-import { API_ENDPOINT } from "@env";
+import { env } from "../utils/Constants";
 import { Alert } from "react-native";
 export const saveUser = async (user) => {
-  const response = await fetch(`${API_ENDPOINT}/api/register`, {
+  const response = await fetch(`${env.url}/api/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -20,13 +20,15 @@ export const saveUser = async (user) => {
 };
 
 export const getRolesAvailables = async () => {
-  const response = await fetch(`${API_ENDPOINT}/api/roles`, {
+  console.log(env.url)
+  const response = await fetch(`${env.url}/api/roles`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
     },
   });
+
   if (!response.ok) {
     Alert.alert("Error en la solicitud de roles");
     return;

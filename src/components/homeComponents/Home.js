@@ -7,7 +7,7 @@ import Reminder from "../reminderComponents/Reminder";
 import Schedule from "../scheduleComponents/Schedule";
 import Score from "../scoreComponents/Score";
 import Subject from "../subjectComponents/Subject";
-import Teacher from "../teacherComponents copy/Teacher";
+import Teacher from "../teacherComponents/Teacher";
 
 const Tab = createBottomTabNavigator();
 const { Navigator: TabNavigator, Screen: TabScreen } = Tab;

@@ -1,15 +1,15 @@
-import { API_ENDPOINT } from "@env";
+import { env } from "../utils/Constants"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {Alert} from "react-native";
 
 export const login = async ({ email, password }) => {
   if (!email || email === "" || !password || password === "") {
-    Alert.alert("Usuario y contraseña son obligatorios");
+    Alert.alert("Usuario y contraseña son obligatorios"); 
     return;
   }
 
   try {
-    const response = await fetch(`${API_ENDPOINT}/api/login`, {
+    const response = await fetch(`${env.url}/api/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -27,7 +27,9 @@ export const login = async ({ email, password }) => {
     }
 
     let jsonResponse = await response.json();
+    console.log(jsonResponse)
     await AsyncStorage.setItem("token", jsonResponse.token);
+    await AsyncStorage.setItem("user", JSON.stringify(jsonResponse.user));
     return jsonResponse || null;
   } catch (error) {
     Alert.alert("Error en el inicio de sesión");
@@ -35,18 +37,19 @@ export const login = async ({ email, password }) => {
 };
 
 export const logout = async () => {
-  fetch(`${API_ENDPOINT}/api/logout`, {
+  const token = await AsyncStorage.getItem("token");
+  fetch(`${env.url}/api/logout`, {
     method: "POST",
     headers: {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        authorization: "Bearer " + AsyncStorage.getItem("token"),
+        Authorization: "Bearer " + token,
       },
     },
   })
     .then((response) => {
-      if (response.ok) {
+      if (response.ok) {  
         AsyncStorage.removeItem("token");
       } else {
         Alert.alert("Error en la solicitud de cierre de sesión");
