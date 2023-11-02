@@ -154,7 +154,7 @@ export default function SingUp() {
                 style={styles.input}
                 errorStyle={{ color: "red" }}
                 errorMessage={
-                  errors.password?.type === "required"
+                  errors.subject_id?.type === "required"
                     ? "Seleccione un rolvalido"
                     : ""
                 }

@@ -2,7 +2,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { StyleSheet, Text, SafeAreaView,ScrollView } from "react-native";
 import { Button, Icon } from "react-native-elements";
-import RemindersList from "./components/RemidersList";
+import RemindersList from "./components/RemindersList";
+import ReminderAdd from "./components/ReminderAdd";
 
 
 const Tab = createMaterialTopTabNavigator();
@@ -31,7 +32,7 @@ export default function Reminder({ navigation }) {
       />
       <TabScreen
         name="RemindersAdd"
-        component={RemindersList}
+        component={ReminderAdd}
         options={{
           tabBarLabel:'agregar',
           tabBarIcon: ({ color, size }) => (
