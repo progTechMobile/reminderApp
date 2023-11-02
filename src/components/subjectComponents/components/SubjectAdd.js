@@ -46,7 +46,7 @@ export default function SubjectAdd({ navigation }) {
   const onSubmit = async (formData) => {
     if (!formData.id && user.id) {
       const isCreated = createSubjet({ ...formData, user_id: user.id });
-      console.log(isCreated)
+
       if (isCreated) {
         reset({
           name: "",

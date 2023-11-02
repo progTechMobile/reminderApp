@@ -27,7 +27,7 @@ export const login = async ({ email, password }) => {
     }
 
     let jsonResponse = await response.json();
-    console.log(jsonResponse)
+    
     await AsyncStorage.setItem("token", jsonResponse.token);
     await AsyncStorage.setItem("user", JSON.stringify(jsonResponse.user));
     return jsonResponse || null;

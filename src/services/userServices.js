@@ -20,7 +20,6 @@ export const saveUser = async (user) => {
 };
 
 export const getRolesAvailables = async () => {
-  console.log(env.url)
   const response = await fetch(`${env.url}/api/roles`, {
     method: "GET",
     headers: {

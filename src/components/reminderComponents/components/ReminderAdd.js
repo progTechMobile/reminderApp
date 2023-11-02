@@ -60,7 +60,6 @@ export default function ReminderAdd({ navigation }) {
   });
 
   const onSubmit = async (formData) => {
-    console.log(formData)
     if (formData.subject_id && user.id) {
       const isCreated = createReminder({
         ...formData,
@@ -68,7 +67,7 @@ export default function ReminderAdd({ navigation }) {
         creation_date: formData.creation_date.toISOString(),
         notification_date: formData.notification_date.toISOString(),
       });
-      console.log(isCreated);
+      
       if (isCreated) {
         reset({
           name: "",

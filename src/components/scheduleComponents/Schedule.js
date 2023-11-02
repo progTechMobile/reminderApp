@@ -1,12 +1,47 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { StyleSheet, Text, SafeAreaView, ScrollView } from "react-native";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { StyleSheet, Text, SafeAreaView,ScrollView } from "react-native";
 import { Button, Icon } from "react-native-elements";
+import SchedulesList from "./components/SchedulesList";
+import ScheduleAdd from "./components/ScheduleAdd";
 
-const Tab = createBottomTabNavigator();
+
+const Tab = createMaterialTopTabNavigator();
 const { Navigator: TabNavigator, Screen: TabScreen } = Tab;
 
-export default function Schedules({ navigation }) {
-  return <Text>Schedules</Text>;
+export default function Schedule({ navigation }) {
+  return (
+    <TabNavigator
+      initialRouteName="SchedulesList"
+      screenOptions={{
+        tabBarAndroidRipple: { borderless: false },
+        tabBarIcon: ({ focused, color, size }) => {
+          return <Icon name="logout" size={24} color="black" />;
+        },
+      }}
+    >
+      <TabScreen
+        name="SchedulesList"
+        component={SchedulesList}
+        options={{
+          tabBarLabel:'Lista',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="event" size={16} color="black" />
+          ),
+        }}
+      />
+      <TabScreen
+        name="SchedulesAdd"
+        component={ScheduleAdd}
+        options={{
+          tabBarLabel:'agregar',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="note-add" size={16} color="black" />
+          ),
+        }}
+      />
+    </TabNavigator>
+  );
 }
 
 const styles = StyleSheet.create({
