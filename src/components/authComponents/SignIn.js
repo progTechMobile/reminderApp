@@ -6,16 +6,17 @@ import {
   Text,
   TextInput,
   View,
-  Button,
   Image,
   Dimensions,
   ScrollView,
+  Linking,
 } from "react-native";
-import { Icon, Input } from "react-native-elements";
+import { Icon, Input, Button } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { env } from "../../utils/Constants"
+import { env } from "../../utils/Constants";
 import { AuthContext } from "../../state/AuthContext";
 import { useForm, Controller } from "react-hook-form";
+import { Link } from "@react-navigation/native";
 
 export default function SignIn() {
   const { signIn } = useContext(AuthContext);
@@ -33,6 +34,24 @@ export default function SignIn() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.inputContainer}>
+          <Button
+            title="App"
+            icon={<Icon name="thumb-up" size={24} color="white" />}
+            onPress={() => {
+              Linking.openURL("https://github.com/progTechMobile/reminderApp");
+            }}
+            style={styles.buttonGithub}
+          />
+          <Button
+            title="Api"
+            icon={<Icon name="thumb-up" size={24} color="white" />}
+            onPress={() => {
+              Linking.openURL("https://github.com/progTechMobile/reminderUApi");
+            }}
+            style={styles.buttonGithub}
+          />
+        </View>
         <Image
           source={require("../../../assets/adaptive-icon.png")}
           style={styles.stretch}
@@ -134,5 +153,11 @@ const styles = StyleSheet.create({
     marginTop: 5,
     paddingBottom: 10,
     paddingTop: 10,
+  },
+  buttonGithub: {
+    marginLeft: 10,
+    paddingLeft: 10,
+    marginRight: 10,
+    paddingRight: 10,
   },
 });
