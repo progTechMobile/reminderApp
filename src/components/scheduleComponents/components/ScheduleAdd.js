@@ -100,7 +100,7 @@ export default function ScheduleAdd({ navigation }) {
                 errorStyle={{ color: "red" }}
                 errorMessage={
                   errors.semester?.type === "required"
-                    ? "Ingrese un nombre"
+                    ? "Ingrese el semestre"
                     : ""
                 }
                 onBlur={onBlur}
@@ -246,7 +246,7 @@ export default function ScheduleAdd({ navigation }) {
                 style={styles.input}
                 errorStyle={{ color: "red" }}
                 errorMessage={
-                  errors.block?.type === "required" ? "Ingrese un nombre" : ""
+                  errors.block?.type === "required" ? "Ingrese el bloque" : ""
                 }
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -267,7 +267,7 @@ export default function ScheduleAdd({ navigation }) {
                 errorStyle={{ color: "red" }}
                 errorMessage={
                   errors.classroom?.type === "required"
-                    ? "Ingrese un nombre"
+                    ? "Ingrese el numero del aula"
                     : ""
                 }
                 onBlur={onBlur}

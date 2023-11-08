@@ -157,9 +157,9 @@ export default function ScoreAdd({ navigation }) {
                 errorStyle={{ color: "red" }}
                 errorMessage={
                   errors.percent?.type === "required"
-                    ? "Ingrese un número de créditos"
+                    ? "Ingrese el porcentaje"
                     : errors.pattern?.type === "required"
-                    ? "Ingrese un número de créditos"
+                    ? "Ingrese el porcentaje"
                     : ""
                 }
                 onBlur={onBlur}
@@ -242,7 +242,7 @@ export default function ScoreAdd({ navigation }) {
                 errorStyle={{ color: "red" }}
                 errorMessage={
                   errors.description?.type === "required"
-                    ? "Ingrese un número de créditos"
+                    ? "Ingrese una descripcion"
                     : ""
                 }
                 onBlur={onBlur}
