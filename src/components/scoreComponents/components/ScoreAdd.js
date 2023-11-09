@@ -131,7 +131,7 @@ export default function ScoreAdd({ navigation }) {
                 errorStyle={{ color: "red" }}
                 errorMessage={
                   errors.score?.type === "required"
-                    ? "Ingrese un nombre"
+                    ? "Ingrese nota"
                     : errors.pattern?.type === "required"
                     ? "Ingrese un número de créditos"
                     : ""

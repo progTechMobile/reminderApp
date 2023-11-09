@@ -1,5 +1,4 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,47 +7,31 @@ import {
   View,
   Dimensions,
 } from "react-native";
-import { Button, Icon, Input } from "react-native-elements";
-import { useForm, Controller } from "react-hook-form";
-import { useState, useEffect, useCallback } from "react";
+import { Button, Icon } from "react-native-elements";
+import { Table, Row, Rows } from "react-native-table-component";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   getAllSchedulesBySubjectId,
   deleteScheduleById,
 } from "../../../services/scheduleService";
 import { getAllSubjects } from "../../../services/subjectService";
-import { useFocusEffect } from "@react-navigation/native";
-import { Table, Row, Rows } from "react-native-table-component";
 
 export default function SchedulesList({ navigation }) {
   const rows = 18;
   const columns = 8;
   const hourNumber = 6;
-  let emptyArray = Array(rows)
-    .fill()
-    .map((_, colIndex) => {
-      return Array(columns)
-        .fill("")
-        .map((_, rowIndex) => {
-          if (rowIndex === 0) {
-            const hour = (colIndex + hourNumber).toString().padStart(2, "0");
-            const time = `${hour}:00`;
-            return time;
-          } else {
-            return "";
-          }
-        });
-    });
-  const [schedules, setSchedules] = useState(emptyArray);
+
+  const [schedules, setSchedules] = useState(generateEmptyArray());
   const [state, setState] = useState({
     tableHead: [
       "Hora",
-      "Lunes",
-      "Martes",
-      "Miercoles",
-      "Jueves",
-      "Viernes",
-      "Sabado",
-      "Domingo",
+      "    L",
+      "    M",
+      "    M",
+      "    J",
+      "    V",
+      "    S",
+      "    D",
     ],
     tableData: schedules,
   });
@@ -58,8 +41,12 @@ export default function SchedulesList({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       if (refreshSchedules) {
-        const getSchedules = async () => {
-          subjects?.map(async (subject) => {
+        const fetchData = async () => {
+          const subjectsAvailables = await getAllSubjects();
+          setSubjects(subjectsAvailables);
+
+          const newSchedules = generateEmptyArray();
+          for (const subject of subjectsAvailables) {
             const currentSchedules = await getAllSchedulesBySubjectId(
               subject.id
             );
@@ -71,24 +58,17 @@ export default function SchedulesList({ navigation }) {
 
               for (let hour = startHour; hour < endHour; hour++) {
                 if (hour >= 0 && hour < rows && day >= 0 && day < columns) {
-                  setSchedules((prevSchedules) => {
-                    const newSchedules = [...prevSchedules];
-                    newSchedules[hour][day] = subject.name;
-                    return newSchedules;
-                  });
+                  newSchedules[hour][day] = subject.name;
                 }
               }
             });
-          });
-          setState({ ...state, tableData: schedules });
-        };
-        const getSubjects = async () => {
-          let subjectsAvailables = await getAllSubjects();
-          setSubjects(subjectsAvailables);
+          }
+
+          setSchedules(newSchedules);
+          setState({ ...state, tableData: newSchedules });
         };
 
-        getSubjects();
-        getSchedules();
+        fetchData();
         setRefreshSchedules(false);
       }
     }, [refreshSchedules])
@@ -102,31 +82,25 @@ export default function SchedulesList({ navigation }) {
     await deleteScheduleById(id);
     handleRefresh();
   };
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <View style={styles.container}>
-          <Text>Horario Semestre {}</Text>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Horario Semestre</Text>
           <Button
             icon={<Icon name="refresh" size={24} color="black" />}
             type="clear"
-            iconRight={true}
-            containerStyle={{ marginRight: 0 }}
-            size="small"
-            raised={true}
-            rounded={true}
-            titleStyle={{ color: "black" }}
             onPress={() => handleRefresh()}
             color="#000"
           />
         </View>
-        <View style={styles.inputContainer}>
+        <View style={styles.tableContainer}>
           <Table borderStyle={{ borderWidth: 2, borderColor: "#c8e1ff" }}>
             <Row
               data={state.tableHead}
               style={styles.head}
-              textStyle={styles.text}
+              textStyle={styles.headText}
             />
             <Rows data={state.tableData} textStyle={styles.text} />
           </Table>
@@ -136,50 +110,45 @@ export default function SchedulesList({ navigation }) {
   );
 }
 
+const generateEmptyArray = () =>
+  Array(18)
+    .fill()
+    .map((_, colIndex) =>
+      Array(8)
+        .fill("")
+        .map((_, rowIndex) =>
+          rowIndex === 0
+            ? `${(colIndex + 6).toString().padStart(2, "0")}:00`
+            : ""
+        )
+    );
+
 const windowWidth = Dimensions.get("window").width;
-const windowHeight = Dimensions.get("window").height;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingLeft: 5,
-    paddingEnd: 5,
+    backgroundColor: "#f5f5f5",
+    paddingHorizontal: 15,
   },
-  inputContainer: {
-    marginBottom: 10,
-    width: windowWidth * 1,
+  scrollViewContent: {
+    flexGrow: 1,
   },
-  input: {
-    marginLeft: 5,
-    marginEnd: 5,
-    paddingLeft: 10,
-    paddingEnd: 10,
-    width: windowWidth * 1,
-  },
-  stretch: {
-    width: windowWidth * 1,
-    height: windowHeight * 0.3,
-    resizeMode: "contain",
-  },
-  itemContainer: {
+  header: {
     flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: "gray",
-    marginBottom: 10,
-  },
-  infoContainer: {
-    flex: 4,
-    padding: 10,
-  },
-  buttonContainer: {
-    flex: 1,
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
-    width: 50,
+    marginVertical: 20,
   },
-  head: { height: 100, backgroundColor: "#f1f8ff" },
-  text: { margin: 6 },
+  headerText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  tableContainer: {
+    marginBottom: 20,
+  },
+  head: { height: 40, backgroundColor: "#2196F3" },
+  headText: { margin: 6, fontWeight: "bold", color: "white" },
+  text: { margin: 6, color: "#333" },
 });

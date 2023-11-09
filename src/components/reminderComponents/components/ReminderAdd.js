@@ -122,7 +122,7 @@ export default function ReminderAdd({ navigation }) {
                 errorStyle={{ color: "red" }}
                 errorMessage={
                   errors.description?.type === "required"
-                    ? "Ingrese un número de créditos"
+                    ? "Ingrese descripción"
                     : ""
                 }
                 onBlur={onBlur}
