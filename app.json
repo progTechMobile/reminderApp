@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "reminderUApp",
-    "slug": "reminderUApp",
+    "slug": "reminderuapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,10 +21,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.joordonezo.reminderuapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c70ddab9-0596-4ec8-9513-9ea729d86f67"
+      }
+    },
+    "owner": "joordonezo"
   }
 }
