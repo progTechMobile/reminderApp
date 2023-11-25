@@ -52,7 +52,12 @@ export default function Teacher({ navigation }) {
           <View style={styles.fullInfo}>
             <Text>Nombre: {selectedData.full_name}</Text>
             <Text>Email: {selectedData.email}</Text>
-            <Text>Calificación: {summary.scoresAverage}</Text>
+            <Text>
+              Calificación:{" "}
+              <Text style={{ fontWeight: "bold" }}>
+                {summary.scoresAverage.toFixed(1)}
+              </Text>
+            </Text>
             <StarRating
               disabled={true}
               maxStars={5}
@@ -71,7 +76,7 @@ export default function Teacher({ navigation }) {
               ))}
           </View>
           <View style={styles.starsContainer}>
-            <Text>: {selectedData.full_name}</Text>
+            <Text>Califica a: {selectedData.full_name}</Text>
             <StarRating
               disabled={false}
               maxStars={5}
@@ -89,7 +94,7 @@ export default function Teacher({ navigation }) {
                 setSelectedData({ ...selectedData, observation: text })
               }
             />
-            <Button onPress={handleSubmit} title="Postear"/>
+            <Button onPress={handleSubmit} title="Postear" />
           </View>
         </View>
       )}
